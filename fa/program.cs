@@ -141,12 +141,53 @@ namespace fans
       return current.IsAcceptState;
     }
   }
-  
-  public class FA3
+
+  public sealed class FA3
   {
+    public static State NoCombination = new State
+    {
+      Name = nameof(NoCombination),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State HaveFirstOne = new State
+    {
+      Name = nameof(HaveFirstOne),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State HaveCombination = new State
+    {
+      Name = nameof(HaveCombination),
+      IsAcceptState = true,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public FA3()
+    {
+      NoCombination.Transitions['0'] = NoCombination;
+      NoCombination.Transitions['1'] = HaveFirstOne;
+
+      HaveFirstOne.Transitions['0'] = NoCombination;
+      HaveFirstOne.Transitions['1'] = HaveCombination;
+
+      HaveCombination.Transitions['0'] = HaveCombination;
+      HaveCombination.Transitions['1'] = HaveCombination;
+    }
+
     public bool? Run(IEnumerable<char> s)
     {
-      return false;
+      var current = NoCombination;
+
+      foreach (var character in s)
+      {
+        current = current.Transitions[character];
+        if (current == null) return null;
+      }
+
+      return current.IsAcceptState;
     }
   }
 
