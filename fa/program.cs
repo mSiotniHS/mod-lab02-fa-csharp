@@ -83,11 +83,62 @@ namespace fans
     }
   }
 
-  public class FA2
+  public sealed class FA2
   {
+    public static State EvenZerosAndEvenOnes = new State
+    {
+      Name = nameof(EvenZerosAndEvenOnes),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State EvenZerosAndOddOnes = new State
+    {
+      Name = nameof(EvenZerosAndOddOnes),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State OddZerosAndEvenOnes = new State
+    {
+      Name = nameof(OddZerosAndEvenOnes),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State OddZerosAndOddOnes = new State
+    {
+      Name = nameof(OddZerosAndOddOnes),
+      IsAcceptState = true,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public FA2()
+    {
+      EvenZerosAndEvenOnes.Transitions['0'] = OddZerosAndEvenOnes;
+      EvenZerosAndEvenOnes.Transitions['1'] = EvenZerosAndOddOnes;
+
+      OddZerosAndEvenOnes.Transitions['0'] = EvenZerosAndEvenOnes;
+      OddZerosAndEvenOnes.Transitions['1'] = OddZerosAndOddOnes;
+
+      EvenZerosAndOddOnes.Transitions['0'] = OddZerosAndOddOnes;
+      EvenZerosAndOddOnes.Transitions['1'] = EvenZerosAndEvenOnes;
+
+      OddZerosAndOddOnes.Transitions['0'] = EvenZerosAndOddOnes;
+      OddZerosAndOddOnes.Transitions['1'] = OddZerosAndEvenOnes;
+    }
+
     public bool? Run(IEnumerable<char> s)
     {
-      return false;
+      var current = EvenZerosAndEvenOnes;
+
+      foreach (var character in s)
+      {
+        current = current.Transitions[character];
+        if (current == null) return null;
+      }
+
+      return current.IsAcceptState;
     }
   }
   
