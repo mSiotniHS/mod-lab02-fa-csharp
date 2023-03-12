@@ -13,6 +13,21 @@ namespace fans
     public bool IsAcceptState;
   }
 
+  public static class CommonLogic
+  {
+    public static bool? Run(IEnumerable<char> s, State initial)
+    {
+      var current = initial;
+
+      foreach (var character in s)
+      {
+        current = current.Transitions[character];
+        if (current == null) return null;
+      }
+
+      return current.IsAcceptState;
+    }
+  }
 
   public sealed class FA1
   {
@@ -69,18 +84,7 @@ namespace fans
       TooManyZeros.Transitions['1'] = TooManyZeros;
     }
 
-    public bool? Run(IEnumerable<char> s)
-    {
-      var current = Initial;
-
-      foreach (var character in s)
-      {
-        current = current.Transitions[character];
-        if (current == null) return null;
-      }
-
-      return current.IsAcceptState;
-    }
+    public bool? Run(IEnumerable<char> s) => CommonLogic.Run(s, Initial);
   }
 
   public sealed class FA2
@@ -128,18 +132,7 @@ namespace fans
       OddZerosAndOddOnes.Transitions['1'] = OddZerosAndEvenOnes;
     }
 
-    public bool? Run(IEnumerable<char> s)
-    {
-      var current = EvenZerosAndEvenOnes;
-
-      foreach (var character in s)
-      {
-        current = current.Transitions[character];
-        if (current == null) return null;
-      }
-
-      return current.IsAcceptState;
-    }
+    public bool? Run(IEnumerable<char> s) => CommonLogic.Run(s, EvenZerosAndEvenOnes);
   }
 
   public sealed class FA3
@@ -177,18 +170,7 @@ namespace fans
       HaveCombination.Transitions['1'] = HaveCombination;
     }
 
-    public bool? Run(IEnumerable<char> s)
-    {
-      var current = NoCombination;
-
-      foreach (var character in s)
-      {
-        current = current.Transitions[character];
-        if (current == null) return null;
-      }
-
-      return current.IsAcceptState;
-    }
+    public bool? Run(IEnumerable<char> s) => CommonLogic.Run(s, NoCombination);
   }
 
   class Program
