@@ -14,11 +14,72 @@ namespace fans
   }
 
 
-  public class FA1
+  public sealed class FA1
   {
+    public static State Initial = new State
+    {
+      Name = nameof(Initial),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State HaveOne = new State
+    {
+      Name = nameof(HaveOne),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State HaveZero = new State
+    {
+      Name = nameof(HaveZero),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State HaveZeroAndOnes = new State
+    {
+      Name = nameof(HaveZeroAndOnes),
+      IsAcceptState = true,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public static State TooManyZeros = new State
+    {
+      Name = nameof(TooManyZeros),
+      IsAcceptState = false,
+      Transitions = new Dictionary<char, State>()
+    };
+
+    public FA1()
+    {
+      Initial.Transitions['0'] = HaveZero;
+      Initial.Transitions['1'] = HaveOne;
+
+      HaveOne.Transitions['0'] = HaveZeroAndOnes;
+      HaveOne.Transitions['1'] = HaveOne;
+
+      HaveZero.Transitions['0'] = TooManyZeros;
+      HaveZero.Transitions['1'] = HaveZeroAndOnes;
+
+      HaveZeroAndOnes.Transitions['0'] = TooManyZeros;
+      HaveZeroAndOnes.Transitions['1'] = HaveZeroAndOnes;
+
+      TooManyZeros.Transitions['0'] = TooManyZeros;
+      TooManyZeros.Transitions['1'] = TooManyZeros;
+    }
+
     public bool? Run(IEnumerable<char> s)
     {
-      return false;
+      var current = Initial;
+
+      foreach (var character in s)
+      {
+        current = current.Transitions[character];
+        if (current == null) return null;
+      }
+
+      return current.IsAcceptState;
     }
   }
 
